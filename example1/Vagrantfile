@@ -1,0 +1,32 @@
+# Example 1
+#
+# Single box with some custom configuration.
+#
+# NOTE: Make sure you have the precise32 base box installed...
+# vagrant box add precise32 http://files.vagrantup.com/precise32.box
+
+Vagrant.configure("2") do |config|
+  
+  config.vm.box = "centos/8"
+  config.vm.hostname = "myprecise.box"
+  
+  # config.vm.network :private_network, ip: "192.168.0.42"
+  config.vm.network "private_network", type: "dhcp"
+
+  # 设置虚拟机名称
+  # 执行vagrant reload查看
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ["modifyvm", :id, "--name", "centos8-vagrant"]
+  end
+
+  # 拷贝文件
+  config.vm.provision "file", source: "./kafka.tgz", destination: "/tmp/kafka.tgz"
+  config.vm.provision "shell", path: "script.sh"
+
+  # 挂载目录 
+  # config.vm.synced_folder  "/home/ningzi/nfs", "/vagrant_data", nfs: true
+
+  # 端口转发
+  config.vm.network :forwarded_port, guest: 8085, host: 8081
+
+end
